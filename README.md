@@ -20,8 +20,10 @@
 
 ## Навигация
 
+- [Обзор документации](docs/00-arc42.md) — Arc42 + C4 обзорно, принцип достаточности
 - [Контекст и границы](docs/01-context.md) — задача, границы системы, глоссарий
 - [ASR](docs/02-asr.md) — architecturally significant requirements
+- [Атрибуты качества и сценарии](docs/03-quality-attributes.md) — каталог, trade-offs, приоритетные атрибуты, сценарии качества (стимул→отклик)
 - **C4-модель**
   - [Уровень 1 — Context](docs/c4/context.md)
   - [Уровень 2 — Containers](docs/c4/container.md) (как сейчас → целевая)
