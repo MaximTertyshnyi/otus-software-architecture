@@ -1,0 +1,12 @@
+# macOS
+.DS_Store
+
+# editors
+.vscode/
+.idea/
+
+# MkDocs (если добавишь сайт позже)
+site/
+
+# node (если добавишь тулинг)
+node_modules/
