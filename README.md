@@ -63,6 +63,7 @@
 - [Контекст и границы](docs/01-context.md) — задача, границы системы, глоссарий
 - [ASR](docs/02-asr.md) — architecturally significant requirements
 - [Атрибуты качества и сценарии](docs/03-quality-attributes.md) — каталог, trade-offs, приоритетные атрибуты, сценарии качества (стимул→отклик)
+- [Декомпозиция на сервисы](docs/04-decomposition.md) — бизнес-возможности, поддомены DDD, cohesion/coupling, DIP
 - **C4-модель**
   - [Уровень 1 — Context](docs/c4/context.md)
   - [Уровень 2 — Containers](docs/c4/container.md) (как сейчас → целевая)
