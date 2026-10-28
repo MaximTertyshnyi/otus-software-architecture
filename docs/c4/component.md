@@ -10,7 +10,7 @@ flowchart TB
   subgraph orch["createAsyncAiTask"]
     sm["State Machine<br/>waiting → processing → done | failed | timeout | canceled"]
     sched["Scheduler<br/>backoff + jitter (конфиг, не хардкод)"]
-    retry["Retry / Dedupe policy<br/>идемпотентность по job-id"]
+    retry["Idempotent Receiver<br/>lastSeq + поглощающий терминал"]
     prog["Progress reporter"]
     tport(["Transport port"])
     pport(["Persistence port"])
@@ -32,4 +32,4 @@ flowchart TB
 
 Трассируемость: `Transport port` — [ADR-0002](../adr/0002-transport-port.md);
 `Persistence port` — [ADR-0003](../adr/0003-task-state-store.md);
-`Retry / Dedupe` — [ADR-0001](../adr/0001-delivery-guarantees.md).
+`Idempotent Receiver` — [ADR-0001](../adr/0001-delivery-guarantees.md), [ADR-0008](../adr/0008-idempotency.md).

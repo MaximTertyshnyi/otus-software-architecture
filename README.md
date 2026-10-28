@@ -71,6 +71,7 @@
 - [Атрибуты качества и сценарии](docs/03-quality-attributes.md) — каталог, trade-offs, приоритетные атрибуты, сценарии качества (стимул→отклик)
 - [Декомпозиция на сервисы](docs/04-decomposition.md) — бизнес-возможности, поддомены DDD, cohesion/coupling, DIP
 - [Фронт-архитектура](docs/05-frontend-architecture.md) — раскладка по FSD, рендеринг/сборка, monorepo vs микрофронтенды, эскиз CI/CD
+- [Модель взаимодействия](docs/06-interaction-model.md) — sync или async, контракты API, брокер, защита от повторов
 - **C4-модель**
   - [Уровень 1 — Context](docs/c4/context.md)
   - [Уровень 2 — Containers](docs/c4/container.md) (как сейчас → целевая)
@@ -83,6 +84,8 @@
   - [0004 — раскладка фронтенда по FSD](docs/adr/0004-fsd-decomposition.md)
   - [0005 — рендеринг и сборка: CSR + code splitting](docs/adr/0005-rendering-build-model.md)
   - [0006 — монорепозиторий, а не микрофронтенды](docs/adr/0006-monorepo-vs-microfrontend.md)
+  - [0007 — модель взаимодействия: async request-reply и Centrifugo для push](docs/adr/0007-interaction-model-and-broker.md)
+  - [0008 — идемпотентность: ключ, Idempotent Receiver, сообщения-состояния](docs/adr/0008-idempotency.md)
 
 ## Чек-лист ДЗ · Декомпозиция
 
@@ -103,3 +106,16 @@
 | Monorepo vs микрофронтенды | [Масштабирование](docs/05-frontend-architecture.md#масштабирование-монорепо-а-не-микрофронтенды), [ADR-0006](docs/adr/0006-monorepo-vs-microfrontend.md) | осознанный отказ от MFE, влияние на поддержку/SLA |
 | Эскиз CI/CD (этапы, окружения, preview) | [CI/CD](docs/05-frontend-architecture.md#эскиз-cicd) | pipeline + preview/staging/production, гейты по атрибутам |
 | Решения как выбор с последствиями (ADR) | [ADR 0004–0006](docs/adr/) | контекст → решение → последствия, связь с ДЗ-1 |
+
+## Чек-лист ДЗ · Модель взаимодействия
+
+| Что требуется | Где сделано | Результат |
+|---|---|---|
+| Выбрать sync или async | [Карта взаимодействий](docs/06-interaction-model.md#карта-взаимодействий-sync-или-async), [ADR-0007](docs/adr/0007-interaction-model-and-broker.md) | синхронно только короткие команды, генерация через `202` и асинхронный результат; диаграмма с перезагрузкой и дублем |
+| Спроектировать контракты API | [Контракты](docs/06-interaction-model.md#контракты-api) | снимок задачи, HTTP с кодами ответов, канал Centrifugo, порт и события внутри SPA |
+| Обосновать брокер | [Брокер](docs/06-interaction-model.md#брокер), [ADR-0007](docs/adr/0007-interaction-model-and-broker.md) | Centrifugo для push, опрос для подстраховки; RabbitMQ и outbox на серверном этапе; почему не Kafka и не SSE |
+| Найти операции, которые опасно повторять | [Таблица](docs/06-interaction-model.md#операции-критичные-к-повтору) | 9 операций: что сломается при повторе и как защищаем |
+| Ключ идемпотентности | [Ключ](docs/06-interaction-model.md#ключ-идемпотентности), [ADR-0008](docs/adr/0008-idempotency.md) | `Idempotency-Key = jobId`, сохраняется до отправки, хеш тела, TTL, ответы `409` и `422` |
+| Idempotent Receiver и дедупликация | [Receiver](docs/06-interaction-model.md#idempotent-receiver) | `lastSeq` и терминал без выхода в Orchestrator, upsert в ленте, `eventId` в телеметрии, inbox на сервере |
+| Коммутативные операции | [Коммутативность](docs/06-interaction-model.md#коммутативность-когда-порядок-не-гарантирован) | состояние вместо изменений, слияние по наибольшему `seq`, нумерованные фрагменты в стриминге чата |
+| Как это проверить | [QAS-3](docs/06-interaction-model.md#qas-3--корректность-повторов) | на один `jobId` одна генерация, один `TaskCompleted` и один применённый результат |

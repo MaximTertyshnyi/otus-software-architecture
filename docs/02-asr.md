@@ -49,6 +49,6 @@ Long-poll и WebSocket работают через один и тот же job-�
 
 | ASR | Связанные решения |
 |---|---|
-| ASR-2, ASR-5 | [ADR-0001 — гарантии доставки](adr/0001-delivery-guarantees.md) |
-| ASR-4 | [ADR-0002 — транспортный порт](adr/0002-transport-port.md) |
+| ASR-2, ASR-5 | [ADR-0001 — гарантии доставки](adr/0001-delivery-guarantees.md), [ADR-0008 — идемпотентность](adr/0008-idempotency.md) |
+| ASR-4 | [ADR-0002 — транспортный порт](adr/0002-transport-port.md), [ADR-0007 — модель взаимодействия](adr/0007-interaction-model-and-broker.md) |
 | ASR-1, ASR-7 | [ADR-0003 — хранилище состояния](adr/0003-task-state-store.md) |
