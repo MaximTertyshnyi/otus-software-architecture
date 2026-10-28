@@ -70,6 +70,7 @@
 - [ASR](docs/02-asr.md) — architecturally significant requirements
 - [Атрибуты качества и сценарии](docs/03-quality-attributes.md) — каталог, trade-offs, приоритетные атрибуты, сценарии качества (стимул→отклик)
 - [Декомпозиция на сервисы](docs/04-decomposition.md) — бизнес-возможности, поддомены DDD, cohesion/coupling, DIP
+- [Фронт-архитектура](docs/05-frontend-architecture.md) — раскладка по FSD, рендеринг/сборка, monorepo vs микрофронтенды, эскиз CI/CD
 - **C4-модель**
   - [Уровень 1 — Context](docs/c4/context.md)
   - [Уровень 2 — Containers](docs/c4/container.md) (как сейчас → целевая)
@@ -79,6 +80,9 @@
   - [0001 — гарантии доставки на клиенте](docs/adr/0001-delivery-guarantees.md)
   - [0002 — транспорт: единый порт vs два движка](docs/adr/0002-transport-port.md)
   - [0003 — хранилище состояния задач](docs/adr/0003-task-state-store.md)
+  - [0004 — раскладка фронтенда по FSD](docs/adr/0004-fsd-decomposition.md)
+  - [0005 — рендеринг и сборка: CSR + code splitting](docs/adr/0005-rendering-build-model.md)
+  - [0006 — монорепозиторий, а не микрофронтенды](docs/adr/0006-monorepo-vs-microfrontend.md)
 
 ## Чек-лист ДЗ · Декомпозиция
 
@@ -89,3 +93,13 @@
 | Сервисы, ответственность и владение данными | [Границы](docs/04-decomposition.md#границы-и-владение-данными) | 3 границы системы + внешняя generic-платформа; общей базы нет |
 | High cohesion / low coupling и риск связанности | [Проверка](docs/04-decomposition.md#проверка-cohesion--coupling) | проверен каждый сервис; разобран риск записи в чужие данные |
 | Карта сервисов и DIP | [Диаграмма](docs/04-decomposition.md#карта-сервисов-и-dip) | Mermaid + `TaskExecutionPort` |
+
+## Чек-лист ДЗ · Фронт-архитектура
+
+| Что требуется | Где сделано | Результат |
+|---|---|---|
+| Декомпозиция по FSD, границы и правила зависимостей | [FSD](docs/05-frontend-architecture.md#декомпозиция-по-fsd), [ADR-0004](docs/adr/0004-fsd-decomposition.md) | слои + карта «куда лёг каждый сервис», линтер границ, разбор антипаттернов |
+| Модель рендеринга/сборки, аргумент через метрики | [Рендеринг и сборка](docs/05-frontend-architecture.md#модель-рендеринга-и-сборки), [ADR-0005](docs/adr/0005-rendering-build-model.md) | CSR + code splitting, разбор TTFB/LCP/INP, бюджет бандла |
+| Monorepo vs микрофронтенды | [Масштабирование](docs/05-frontend-architecture.md#масштабирование-монорепо-а-не-микрофронтенды), [ADR-0006](docs/adr/0006-monorepo-vs-microfrontend.md) | осознанный отказ от MFE, влияние на поддержку/SLA |
+| Эскиз CI/CD (этапы, окружения, preview) | [CI/CD](docs/05-frontend-architecture.md#эскиз-cicd) | pipeline + preview/staging/production, гейты по атрибутам |
+| Решения как выбор с последствиями (ADR) | [ADR 0004–0006](docs/adr/) | контекст → решение → последствия, связь с ДЗ-1 |
