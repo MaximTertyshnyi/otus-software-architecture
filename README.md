@@ -111,11 +111,12 @@
 
 | Что требуется | Где сделано | Результат |
 |---|---|---|
-| Выбрать sync или async | [Карта взаимодействий](docs/06-interaction-model.md#карта-взаимодействий-sync-или-async), [ADR-0007](docs/adr/0007-interaction-model-and-broker.md) | синхронно только короткие команды, генерация через `202` и асинхронный результат; диаграмма с перезагрузкой и дублем |
-| Спроектировать контракты API | [Контракты](docs/06-interaction-model.md#контракты-api) | снимок задачи, HTTP с кодами ответов, канал Centrifugo, порт и события внутри SPA |
+| Выбрать sync или async | [Стыки](docs/06-interaction-model.md#карта-взаимодействий-sync-или-async), [ADR-0007](docs/adr/0007-interaction-model-and-broker.md) | таблица стыков `POST …/collect`, `GET <uri>`, чат через Centrifugo: кто кого ждёт, модель, почему, что при повторе; три неочевидных случая |
+| Спроектировать контракты API | [Единый job-контракт](docs/06-interaction-model.md#единый-job-контракт) | старт, статус и push одним снимком с полями, `schemaVersion` и `seq`; правила смены версии; HTTP с кодами ответов |
+| Доходит ли job-id до бэкенда | [Раздел](docs/06-interaction-model.md#доходит-ли-job-id-до-бэкенда), [ADR-0008](docs/adr/0008-idempotency.md) | сейчас нет, и повтор `POST` даёт вторую генерацию; решение — `job-id` в `POST …/collect` как `Idempotency-Key` |
 | Обосновать брокер | [Брокер](docs/06-interaction-model.md#брокер), [ADR-0007](docs/adr/0007-interaction-model-and-broker.md) | Centrifugo для push, опрос для подстраховки; RabbitMQ и outbox на серверном этапе; почему не Kafka и не SSE |
 | Найти операции, которые опасно повторять | [Таблица](docs/06-interaction-model.md#операции-критичные-к-повтору) | 9 операций: что сломается при повторе и как защищаем |
 | Ключ идемпотентности | [Ключ](docs/06-interaction-model.md#ключ-идемпотентности), [ADR-0008](docs/adr/0008-idempotency.md) | `Idempotency-Key = jobId`, сохраняется до отправки, хеш тела, TTL, ответы `409` и `422` |
 | Idempotent Receiver и дедупликация | [Receiver](docs/06-interaction-model.md#idempotent-receiver) | `lastSeq` и терминал без выхода в Orchestrator, upsert в ленте, `eventId` в телеметрии, inbox на сервере |
-| Коммутативные операции | [Коммутативность](docs/06-interaction-model.md#коммутативность-когда-порядок-не-гарантирован) | состояние вместо изменений, слияние по наибольшему `seq`, нумерованные фрагменты в стриминге чата |
+| Коммутативные операции | [Порядок обновлений](docs/06-interaction-model.md#коммутативность-когда-порядок-не-гарантирован) | состояние вместо изменений, слияние по наибольшему `seq`, пример с push и опросом вперемешку: статус не откатывается из `done` |
 | Как это проверить | [QAS-3](docs/06-interaction-model.md#qas-3--корректность-повторов) | на один `jobId` одна генерация, один `TaskCompleted` и один применённый результат |
