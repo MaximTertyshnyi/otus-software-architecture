@@ -72,6 +72,7 @@
 - [Декомпозиция на сервисы](docs/04-decomposition.md) — бизнес-возможности, поддомены DDD, cohesion/coupling, DIP
 - [Фронт-архитектура](docs/05-frontend-architecture.md) — раскладка по FSD, рендеринг/сборка, monorepo vs микрофронтенды, эскиз CI/CD
 - [Модель взаимодействия](docs/06-interaction-model.md) — sync или async, контракты API, брокер, защита от повторов
+- [Надёжность](docs/07-reliability.md) — тактики отказоустойчивости, метрики, SLI/SLO, алерты, разбор инцидентов
 - **C4-модель**
   - [Уровень 1 — Context](docs/c4/context.md)
   - [Уровень 2 — Containers](docs/c4/container.md) (как сейчас → целевая)
@@ -86,6 +87,8 @@
   - [0006 — монорепозиторий, а не микрофронтенды](docs/adr/0006-monorepo-vs-microfrontend.md)
   - [0007 — модель взаимодействия: async request-reply и Centrifugo для push](docs/adr/0007-interaction-model-and-broker.md)
   - [0008 — идемпотентность: ключ, Idempotent Receiver, сообщения-состояния](docs/adr/0008-idempotency.md)
+  - [0009 — тактики отказоустойчивости: повтор с бюджетом, circuit breaker, изоляция](docs/adr/0009-fault-tolerance-tactics.md)
+  - [0010 — observability: SLO, алерты по симптомам, OpenTelemetry](docs/adr/0010-observability-slo-alerting.md)
 
 ## Чек-лист ДЗ · Декомпозиция
 
@@ -120,3 +123,16 @@
 | Idempotent Receiver и дедупликация | [Receiver](docs/06-interaction-model.md#idempotent-receiver) | `lastSeq` и терминал без выхода в Orchestrator, upsert в ленте, `eventId` в телеметрии, inbox на сервере |
 | Коммутативные операции | [Порядок обновлений](docs/06-interaction-model.md#коммутативность-когда-порядок-не-гарантирован) | состояние вместо изменений, слияние по наибольшему `seq`, пример с push и опросом вперемешку: статус не откатывается из `done` |
 | Как это проверить | [QAS-3](docs/06-interaction-model.md#qas-3--корректность-повторов) | на один `jobId` одна генерация, один `TaskCompleted` и один применённый результат |
+
+## Чек-лист ДЗ · Надёжность
+
+| Что требуется | Где сделано | Результат |
+|---|---|---|
+| Тактики отказоустойчивости | [Часть 1](docs/07-reliability.md#часть-1-тактики-отказоустойчивости), [ADR-0009](docs/adr/0009-fault-tolerance-tactics.md) | таблица из 11 отказов: как замечаем, что делаем, что видит пользователь; повтор с бюджетом, circuit breaker, изоляция по типам, мягкая деградация |
+| Три столпа observability | [Три столпа](docs/07-reliability.md#три-столпа-и-что-в-каждом) | что идёт в метрики, логи и трейсы, как их связывает `jobId` и `traceId` |
+| Метрики по RED / Golden Signals / USE | [Метрики](docs/07-reliability.md#метрики-по-red-и-four-golden-signals) | RED и насыщение по стыкам, USE по ресурсам клиента, отдельные метрики корректности |
+| Сбор метрик, кардинальность, OpenTelemetry | [Как собираем](docs/07-reliability.md#как-собираем), [ADR-0010](docs/adr/0010-observability-slo-alerting.md) | push через OTel Web SDK и Collector, `traceparent` до бэкенда, tail sampling, правило про метки |
+| SLI и SLO | [SLI и SLO](docs/07-reliability.md#sli-и-slo) | 5 SLI с целями на 28 дней, бюджет ошибок и что делаем, когда он кончился |
+| 2–3 actionable-алерта | [Алерты](docs/07-reliability.md#алерты) | 3 алерта по симптомам с условием, адресатом и runbook'ом; список того, на что алерт не ставим |
+| MTBF / MTTR и инциденты | [MTBF и MTTR](docs/07-reliability.md#mtbf-и-mttr), [Инциденты](docs/07-reliability.md#когда-что-то-сломалось) | тактики сокращают MTTR; процесс инцидента и шаблон blameless-разбора |
+| Как проверить | [QAS-4](docs/07-reliability.md#qas-4--отказ-ai-бэкенда) | бэкенд 3 минуты отвечает `503`: алерт за 5 минут, без потерь, дублей и всплеска |
